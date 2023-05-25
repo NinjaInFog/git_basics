@@ -36,7 +36,7 @@ TOTAL = SUM * ((1 + p) ** (SET_PERIOD / FIXED_PERIOD))
 
 
 USAGE = """USAGE: {script} initial_sum percent fixed_period set_period
-
+    incorrect number of arguments or incorrect arguments
 \tCalculate deposit yield. See script source for more details.
 """
 USAGE = USAGE.strip()
@@ -51,19 +51,49 @@ def deposit(initial_sum, percent, fixed_period, set_period):
 
 def main(args):
     """Gets called when run as a script."""
-    if len(args) != 4 + 1:
-        exit(USAGE.format(script=args[0]))
+    state = []
+    if len(args) == 4 + 1:
+        state = "fixed_period_state"
+    elif len(args) == 3 + 1:
+        state = "x_period_state"
+    else :
+        state = "exit"
 
     args = args[1:]
-    initial_sum, percent, fixed_period, set_period = map(float, args)
+
+    if any(float(ele) < 0 for ele in args):
+        state = "exit"
+
+
+    if state == "fixed_period_state":
+        initial_sum, percent, fixed_period, set_period = map(float, args)
+        res = deposit(initial_sum, percent, fixed_period, set_period)
+        print(res)
+    elif state == "x_period_state":
+        initial_sum, percent, fixed_period = map(float, args)
+
+        res = deposit(initial_sum, percent, fixed_period, 31)
+        print(res)
+
+        res = deposit(initial_sum, percent, fixed_period, 365)
+        print(res)
+
+        res = deposit(initial_sum, percent, fixed_period, 1825)
+        print(res)
+
+        res = deposit(initial_sum, percent, fixed_period, 3650)
+        print(res)
+    else :
+        exit(USAGE.format(script=args[0]))
+    
 
     # same as
     # initial_sum = float(args[0])
     # percent = float(args[1])
     # ...
 
-    res = deposit(initial_sum, percent, fixed_period, set_period)
-    print(res)
+    
+    
 
 
 if __name__ == '__main__':
